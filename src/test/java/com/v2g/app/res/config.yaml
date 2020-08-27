@@ -1,0 +1,16 @@
+environment:
+  buildings:
+    - 
+  current_temperature: 70
+v2g_system:
+  sources:
+    - 
+  routers:
+    -
+  charging_stations:
+    - employee:
+      name: Adam
+    - employee:
+      name: Bob
+    - employee:
+      name: Charlie
