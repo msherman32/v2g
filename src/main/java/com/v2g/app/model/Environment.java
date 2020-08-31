@@ -10,9 +10,19 @@ public class Environment {
         return current_temperature;
     }
 
+    public Building getBuilding() {
+        return buildings.get(0);
+        // TODO: fix this
+    }
+
     // TODO: maybe the computer can make the predicictions about which building is the best
-    private class Building {
+    public class Building {
         private boolean is_default;
+        private int seconds_open;
         // TODO: add a location object that will allow us to calculate the typical trip distance it takes
+
+        public int get_seconds_open() {
+            return seconds_open;
+        }
     }   
 }

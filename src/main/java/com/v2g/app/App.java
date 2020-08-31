@@ -18,6 +18,7 @@ public class App
         V2G_System v2g_System = new V2G_System();
         boolean typical_hours = true;
         // final double minimum_percentage = 95;
+        int num_secs = 0;
 
         while (v2g_System.cars_at_charging_stations() && typical_hours) { // TODO: fix this
 
@@ -53,9 +54,11 @@ public class App
             }
             
 
-            if (num_iterations > some_amount) {
+            num_secs++;
+            if (num_secs > environment.getBuilding().get_seconds_open()) {
                 typical_hours = false;
             }
+            
 
 
 
