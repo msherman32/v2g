@@ -29,7 +29,7 @@ public class App {
             String url = "http://api.openweathermap.org/data/2.5/weather";
             String api_key = env.get("weather_api_key");
             // String charset = "UTF-8";
-            // String query = String.format("q=%s&appid=%s", URLEncoder.encode("Dunwoody", charset), URLEncoder.encode("cc50c7a7d1aa737bbb24cafff1d0e8f4", charset));
+            // String query = String.format("q=%s&appid=%s", URLEncoder.encode("Dunwoody", charset), URLEncoder.encode(api_key, charset));
             String query = String.format("q=%s&appid=%s", "Dunwoody", api_key);
             URLConnection connection = new URL(url + "?" + query).openConnection();
             // connection.setRequestProperty("Accept-Charset", charset);
