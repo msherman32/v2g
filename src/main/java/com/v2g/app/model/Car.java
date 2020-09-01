@@ -32,6 +32,14 @@ public class Car {
         return battery.current_charge;   
     }
 
+    public void set_current_charge(double charge) {
+        battery.current_charge = charge;
+    }
+
+    public void add_charge(double charge_increment) {
+        battery.current_charge += charge_increment;
+    }
+
     public double get_miles_driveable_at_capacity() {
         return battery.miles_driveable_at_capacity;
     }  
@@ -86,7 +94,7 @@ public class Car {
 
         public double get_miles_driveable_at_capacity() {
             return miles_driveable_at_capacity;
-        }        
+        }
     }
 
 }

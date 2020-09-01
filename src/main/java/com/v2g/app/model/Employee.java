@@ -11,7 +11,6 @@ public class Employee {
     private double distance_to_home;
     private ArrayList<Car> cars;
 
-
     public Employee() {
     }
 
@@ -23,12 +22,19 @@ public class Employee {
         this.cars = cars;
     }
 
+    /**
+     * This method returns the minimum charge needed for this particular car.
+     * First, we calculate the distance needed to get from work to home and from home back to work.
+     * Second, we calculate the ratio of distance travelable to a single unit of charge.
+     * Third, we caluclate the minimum power required as a factor of the distance and ratio + the power that will dissipate as a function of temperature
+     * Finally, we multiply this minimum power by 3 to account for the safety factor and return the percentage of the battery to charge
+     */
     public double get_minimum_charge(double temperature) {
-        double mileage_required = this.distance_to_home * 2; // To get from work to home and from home back to work
+        double mileage_required = this.distance_to_home * 2;
         double miles_per_unit_of_power_ratio = this.get_car().get_miles_driveable_at_capacity() / this.get_car().get_capacity();
         double power_required = (mileage_required / miles_per_unit_of_power_ratio) + this.get_car().getBattery().get_power_dissipation(temperature);
         double minimum_guaranteed_power = 3 * power_required;
-        return minimum_guaranteed_power / this.get_car().get_capacity();
+        return minimum_guaranteed_power >= this.get_car().get_capacity() ? 1.0 : minimum_guaranteed_power / this.get_car().get_capacity(); 
     }
 
     public Car get_car() {

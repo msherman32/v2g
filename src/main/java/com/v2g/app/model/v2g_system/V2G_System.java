@@ -23,12 +23,25 @@ public class V2G_System {
         return this.sources;
     }
 
+    public PowerSupply getPowerSource() {
+        return this.sources.get(0);
+    }
+
+    // Send this request to a particular power supply or a matrix of supplies
+    public double send_request(double request) {
+        return request >= this.getPowerSource().getMax_power_supply_rate() ? this.getPowerSource().getMax_power_supply_rate() : request;
+    }
+
     public void setSources(ArrayList<PowerSupply> sources) {
         this.sources = sources;
     }
 
     public ArrayList<PowerRouter> getRouters() {
         return this.routers;
+    }
+
+    public PowerRouter getRouter() {
+        return this.routers.get(0);
     }
 
     public void setRouters(ArrayList<PowerRouter> routers) {
@@ -83,7 +96,7 @@ public class V2G_System {
             "}";
     }    
     
-    public boolean cars_at_charging_stations() {
+    public boolean cars_currently_charging() {
         for (ChargingStation station : charging_stations) {
             if (station.is_occupied()) {
                 return true;
