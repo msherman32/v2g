@@ -10,6 +10,10 @@ public class PowerRouter {
         return this.cells;
     }
 
+    public void clearCells() {
+        this.cells.clear();;
+    }
+
     public double getTotalRequest() {
         double total = 0.0;
         for (PowerCell cell : cells) {
@@ -28,11 +32,11 @@ public class PowerRouter {
             this.stats.setCurrent_level(current_level);
             this.stats.setMinimum_level(minimum_level);
         }
-        
+
         public void prepare_request() { // TODO: put a goal object as a parameter?
             double difference = this.stats.getMinimum_level() - this.stats.getCurrent_level();
-            Request request = new Request();
-            request.setRequest_level(difference);            
+            this.request = new Request();
+            this.request.setRequest_level(difference);
         }
 
         public double getCapacity() {
@@ -55,27 +59,35 @@ public class PowerRouter {
         public double getCurrent_level() {
             return current_level;
         }
+
         public double getMinimum_level() {
             return minimum_level;
         }
+
         public void setMinimum_level(double minimum_level) {
             this.minimum_level = minimum_level;
         }
+
         public void setCurrent_level(double current_level) {
             this.current_level = current_level;
         }
-       
+
     }
-    
+
     public class Request {
         private double request_level;
 
         public double getRequest_level() {
             return request_level;
         }
+
         public void setRequest_level(double request_level) {
             this.request_level = request_level;
         }
+    }
+
+    public PowerCell getCell(int index) {
+        return this.cells.get(index);
     }
     
 }

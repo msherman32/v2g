@@ -4,8 +4,13 @@ import java.time.zone.ZoneOffsetTransitionRule.TimeDefinition;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Employee {
-    private String name; // Used to ID people in the system
+import com.v2g.app.model.v2g_system.mediator.Component;
+import com.v2g.app.model.v2g_system.mediator.Mediator;
+
+public class Employee implements Component {
+    private Mediator system;
+    private String employee_id;
+    private String name;
     private TimeDefinition expected_arrival;
     private TimeDefinition expected_departure;
     private double distance_to_home;
@@ -14,7 +19,8 @@ public class Employee {
     public Employee() {
     }
 
-    public Employee(String name, TimeDefinition expected_arrival, TimeDefinition expected_departure, double distance_to_home, ArrayList<Car> cars) {
+    public Employee(String name, TimeDefinition expected_arrival, TimeDefinition expected_departure,
+            double distance_to_home, ArrayList<Car> cars) {
         this.name = name;
         this.expected_arrival = expected_arrival;
         this.expected_departure = expected_departure;
@@ -23,21 +29,33 @@ public class Employee {
     }
 
     /**
-     * This method returns the minimum charge needed for this particular car.
-     * First, we calculate the distance needed to get from work to home and from home back to work.
-     * Second, we calculate the ratio of distance travelable to a single unit of charge.
-     * Third, we caluclate the minimum power required as a factor of the distance and ratio + the power that will dissipate as a function of temperature
-     * Finally, we multiply this minimum power by 3 to account for the safety factor and return the percentage of the battery to charge
+     * This method returns the minimum charge needed for this particular car. First,
+     * we calculate the distance needed to get from work to home and from home back
+     * to work. Second, we calculate the ratio of distance travelable to a single
+     * unit of charge. Third, we caluclate the minimum power required as a factor of
+     * the distance and ratio + the power that will dissipate as a function of
+     * temperature Finally, we multiply this minimum power by 3 to account for the
+     * safety factor and return the percentage of the battery to charge
      */
-    public double get_minimum_charge(double temperature) {
+    public double get_minimum_charge(double factor, double temperature) throws Exception {
+        if (factor < 1.0) {
+            throw new Exception("Factor is less than 1.0.");
+        }
         double mileage_required = this.distance_to_home * 2;
-        double miles_per_unit_of_power_ratio = this.get_car().get_miles_driveable_at_capacity() / this.get_car().get_capacity();
-        double power_required = (mileage_required / miles_per_unit_of_power_ratio) + this.get_car().getBattery().get_power_dissipation(temperature);
-        double minimum_guaranteed_power = 3 * power_required;
-        return minimum_guaranteed_power >= this.get_car().get_capacity() ? 1.0 : minimum_guaranteed_power / this.get_car().get_capacity(); 
+        double miles_per_unit_of_power_ratio = this.getCurrentCar().get_miles_driveable_at_capacity()
+                / this.getCurrentCar().get_capacity();
+        double power_required = (mileage_required / miles_per_unit_of_power_ratio)
+                + this.getCurrentCar().getBattery().get_power_dissipation(temperature);
+        double minimum_guaranteed_power = factor * power_required;
+        return minimum_guaranteed_power >= this.getCurrentCar().get_capacity() ? 1.0
+                : minimum_guaranteed_power / this.getCurrentCar().get_capacity();
     }
 
-    public Car get_car() {
+    public double get_current_charge() {
+        return this.getCurrentCar().get_current_charge();
+    }
+
+    public Car getCurrentCar() {
         return cars.get(0);
         // TODO: fix this logic!
     }
@@ -115,7 +133,9 @@ public class Employee {
             return false;
         }
         Employee employee = (Employee) o;
-        return Objects.equals(name, employee.name) && Objects.equals(expected_arrival, employee.expected_arrival) && Objects.equals(expected_departure, employee.expected_departure) && distance_to_home == employee.distance_to_home && Objects.equals(cars, employee.cars);
+        return Objects.equals(name, employee.name) && Objects.equals(expected_arrival, employee.expected_arrival)
+                && Objects.equals(expected_departure, employee.expected_departure)
+                && distance_to_home == employee.distance_to_home && Objects.equals(cars, employee.cars);
     }
 
     @Override
@@ -125,13 +145,17 @@ public class Employee {
 
     @Override
     public String toString() {
-        return "{" +
-            " name='" + getName() + "'" +
-            ", expected_arrival='" + getExpected_arrival() + "'" +
-            ", expected_departure='" + getExpected_departure() + "'" +
-            ", distance_to_home='" + getDistance_to_home() + "'" +
-            ", cars='" + getCars() + "'" +
-            "}";
+        return "{" + " name='" + getName() + "'" + ", expected_arrival='" + getExpected_arrival() + "'"
+                + ", expected_departure='" + getExpected_departure() + "'" + ", distance_to_home='"
+                + getDistance_to_home() + "'" + ", cars='" + getCars() + "'" + "}";
+    }
+
+    public void setMediator(Mediator mediator) {
+        this.system = mediator;
+    }
+
+    public void leaveChargingStation() {
+        system.leave(this.employee_id);
     }
 
 }

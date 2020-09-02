@@ -4,21 +4,23 @@ import java.util.Objects;
 
 import com.v2g.app.model.Car;
 import com.v2g.app.model.Employee;
+import com.v2g.app.model.v2g_system.mediator.Component;
+import com.v2g.app.model.v2g_system.mediator.Mediator;
 
-public class ChargingStation {
-
+public class ChargingStation implements Component {
+    private Mediator system;
     private Employee occupant;
-   
+
     public boolean is_occupied() {
         return occupant != null;
     }
 
     public boolean is_satisfied(double minimum_value) {
-        return occupant.get_car().get_percentage() >= minimum_value; 
+        return occupant.getCurrentCar().get_percentage() >= minimum_value;
     }
 
     public Car get_default_car() {
-        return occupant.get_car();
+        return occupant.getCurrentCar();
     }
 
     public ChargingStation() {
@@ -30,6 +32,10 @@ public class ChargingStation {
 
     public Employee getoccupant() {
         return this.occupant;
+    }
+
+    public double get_current_charge() {
+        return this.occupant.get_current_charge();
     }
 
     public void setoccupant(Employee occupant) {
@@ -59,10 +65,11 @@ public class ChargingStation {
 
     @Override
     public String toString() {
-        return "{" +
-            " occupant='" + getoccupant() + "'" +
-            "}";
+        return "{" + " occupant='" + getoccupant() + "'" + "}";
     }
 
-    
+    public void setMediator(Mediator mediator) {
+        this.system = mediator;
+    }
+
 }

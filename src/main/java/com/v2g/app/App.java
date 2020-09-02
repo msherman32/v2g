@@ -17,6 +17,8 @@ import org.json.JSONObject;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class App {
+
+    private static final int THIRTY_MINUTES = 1800;
     public static void main( String[] args )
     {
         // TODO: Setup environment from yaml
@@ -54,53 +56,18 @@ public class App {
         while (v2g_System.cars_currently_charging() && typical_hours) { // TODO: fix this
 
             // 1. Each charging station will send their stats to the router
-            // double total_power_requested = 0.0;
-            int cell = 0;
-            for (ChargingStation station : v2g_System.getCharging_stations()) {
-                if (station.is_occupied()) {
-                    double minimum_percentage = station.getoccupant().get_minimum_charge(temperature);
-                    if (!station.is_satisfied(minimum_percentage)) {
-                        // Send current charge to router's cell that matches this charging station (1:1 ratio)
-                        v2g_System.getRouter().getCells().get(cell).set_stats(station.getoccupant().get_car().get_current_charge(), minimum_percentage);
-                    } else {
-                        // Do some v2g stuff...
-                    }
-                }
-                cell++;
-            }
+            v2g_System.sendChargingStationStatsToRouter(temperature);
             
             // 2. The router will send its request to the power supply
-            for (PowerCell power_cell : v2g_System.getRouter().getCells()) {
-                power_cell.prepare_request();
-            }
-            double requested_Charge = v2g_System.getRouter().getTotalRequest();
+            double requested_Charge = v2g_System.sendRouterRequestToPowerSupply();
             
             // 3. The power supply will send power to the router
-            double power_returned = v2g_System.send_request(requested_Charge);
+            double power_returned = v2g_System.sendPowerSupplyResponseToRouter();
             
             // 4. The router will distribute the power to the charging stations
-            if (power_returned == requested_Charge) {
-                // Send the desired power to the charging stations that requested them
-                for (ChargingStation station : v2g_System.getCharging_stations()) {
-                    // station.getoccupant().get_car().getBattery().setValue;
-                    if (station.is_occupied()) {
-                        double minimum_percentage = station.getoccupant().get_minimum_charge(temperature);
-                        if (station.is_satisfied(minimum_percentage)) {
-                            // remove from some queue
-                        } else {
-                            // do something else
-                        }
-                    }
-                }
-
-                // Clear each current stats and request in each power cell
-
-            } else { // Will be less than that supplied
-                // Decide based on time which ones will be leaving soon and divide it up this way
-
-
-            }
+            v2g_System.sendRouterPowerToChargingStations(power_returned, requested_Charge);
             
+            v2g_System.clear();
 
             num_secs++;
             if (num_secs > environment.getBuilding().get_seconds_open()) {
