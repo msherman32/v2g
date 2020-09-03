@@ -4,6 +4,7 @@ import java.time.zone.ZoneOffsetTransitionRule.TimeDefinition;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.v2g.app.App;
 import com.v2g.app.model.v2g_system.mediator.Component;
 import com.v2g.app.model.v2g_system.mediator.Mediator;
 
@@ -37,7 +38,7 @@ public class Employee implements Component {
      * temperature Finally, we multiply this minimum power by 3 to account for the
      * safety factor and return the percentage of the battery to charge
      */
-    public double get_minimum_charge(double factor, double temperature) throws Exception {
+    public double get_minimum_charge(double factor) throws Exception {
         if (factor < 1.0) {
             throw new Exception("Factor is less than 1.0.");
         }
@@ -45,10 +46,16 @@ public class Employee implements Component {
         double miles_per_unit_of_power_ratio = this.getCurrentCar().get_miles_driveable_at_capacity()
                 / this.getCurrentCar().get_capacity();
         double power_required = (mileage_required / miles_per_unit_of_power_ratio)
-                + this.getCurrentCar().getBattery().get_power_dissipation(temperature);
+                + this.getCurrentCar().getBattery().get_power_dissipation(App.temperature);
         double minimum_guaranteed_power = factor * power_required;
-        return minimum_guaranteed_power >= this.getCurrentCar().get_capacity() ? 1.0
-                : minimum_guaranteed_power / this.getCurrentCar().get_capacity();
+        return minimum_guaranteed_power >= this.getCurrentCar().get_capacity() 
+            ? this.getCurrentCar().get_capacity() : minimum_guaranteed_power;
+        // return minimum_guaranteed_power >= this.getCurrentCar().get_capacity() ? 1.0
+        //         : minimum_guaranteed_power / this.getCurrentCar().get_capacity();
+    }
+
+    public boolean is_satisfied() throws Exception {
+        return this.getCurrentCar().get_percentage() >= this.get_minimum_charge(3);
     }
 
     public double get_current_charge() {
@@ -156,6 +163,10 @@ public class Employee implements Component {
 
     public void leaveChargingStation() {
         system.leave(this.employee_id);
+    }
+
+    public void arriveAtChargingStation() throws Exception {
+        system.arrive(this.employee_id);
     }
 
 }

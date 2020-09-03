@@ -11,9 +11,13 @@ public class PowerRouter {
     }
 
     public void clearCells() {
-        this.cells.clear();;
+        for (PowerCell powerCell : this.cells) {
+            powerCell.clear();
+        }
+        // this.clear(); // TODO ??
     }
 
+    // TODO: factor in time here?
     public double getTotalRequest() {
         double total = 0.0;
         for (PowerCell cell : cells) {
@@ -27,13 +31,18 @@ public class PowerRouter {
         private Charge_Stats stats;
         private Request request;
 
+        public void clear() {
+            this.stats = null;
+        }
+
         public void set_stats(double current_level, double minimum_level) {
             this.stats = new Charge_Stats();
             this.stats.setCurrent_level(current_level);
             this.stats.setMinimum_level(minimum_level);
         }
 
-        public void prepare_request() { // TODO: put a goal object as a parameter?
+        // TODO: put a goal object as a parameter?
+        public void prepare_request() {
             double difference = this.stats.getMinimum_level() - this.stats.getCurrent_level();
             this.request = new Request();
             this.request.setRequest_level(difference);
@@ -55,6 +64,15 @@ public class PowerRouter {
     public class Charge_Stats {
         private double current_level;
         private double minimum_level;
+        private int num_secs_left;
+
+        public int getNum_secs_left() {
+            return num_secs_left;
+        }
+
+        public void setNum_secs_left(int num_secs_left) {
+            this.num_secs_left = num_secs_left;
+        }
 
         public double getCurrent_level() {
             return current_level;

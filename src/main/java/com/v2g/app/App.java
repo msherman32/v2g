@@ -7,10 +7,9 @@ import java.util.Scanner;
 import java.net.URL;
 import java.net.URLConnection;
 
+import com.v2g.app.model.Employee;
 import com.v2g.app.model.Environment;
-import com.v2g.app.model.v2g_system.ChargingStation;
 import com.v2g.app.model.v2g_system.V2G_System;
-import com.v2g.app.model.v2g_system.PowerRouter.*;
 
 import org.json.JSONObject;
 
@@ -18,13 +17,15 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 public class App {
 
-    private static final int THIRTY_MINUTES = 1800;
+    public static final int THIRTY_MINUTES = 1800; // in seconds
+    public static double temperature;
+
     public static void main( String[] args )
     {
         // TODO: Setup environment from yaml
         Dotenv env = Dotenv.load();
         Environment environment = new Environment();
-        double temperature = environment.current_temperature();
+        temperature = environment.current_temperature();
 
         // Get Actual Temperature:
         try {
@@ -53,25 +54,33 @@ public class App {
         // final double minimum_percentage = 95;
         int num_secs = 0;
 
-        while (v2g_System.cars_currently_charging() && typical_hours) { // TODO: fix this
+        Employee adam = new Employee();
+        try {
+            adam.arriveAtChargingStation();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        while (v2g_System.cars_currently_charging() && typical_hours) { // TODO: fix this logic...
 
             // 1. Each charging station will send their stats to the router
-            v2g_System.sendChargingStationStatsToRouter(temperature);
+            v2g_System.sendChargingStationStatsToRouter();
             
             // 2. The router will send its request to the power supply
-            double requested_Charge = v2g_System.sendRouterRequestToPowerSupply();
+            double power_requested = v2g_System.sendRouterRequestToPowerSupply();
             
             // 3. The power supply will send power to the router
             double power_returned = v2g_System.sendPowerSupplyResponseToRouter();
             
             // 4. The router will distribute the power to the charging stations
-            v2g_System.sendRouterPowerToChargingStations(power_returned, requested_Charge);
+            v2g_System.sendRouterPowerToChargingStations(power_returned, power_requested);
             
             v2g_System.clear();
 
             num_secs++;
             if (num_secs > environment.getBuilding().get_seconds_open()) {
                 typical_hours = false;
+                adam.leaveChargingStation();
             }
 
         } // End Cycle    
