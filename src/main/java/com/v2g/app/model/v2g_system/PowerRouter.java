@@ -21,7 +21,7 @@ public class PowerRouter {
     public double getTotalRequest() {
         double total = 0.0;
         for (PowerCell cell : cells) {
-            total += cell.getRequest().request_level;
+            total += cell.getRequest().getRequest_level();
         }
         return total;
     }
@@ -46,6 +46,7 @@ public class PowerRouter {
             double difference = this.stats.getMinimum_level() - this.stats.getCurrent_level();
             this.request = new Request();
             this.request.setRequest_level(difference);
+            this.request.setNum_secs_left(this.stats.getNum_secs_left());
         }
 
         public double getCapacity() {
@@ -94,13 +95,22 @@ public class PowerRouter {
 
     public class Request {
         private double request_level;
+        private double num_secs_left;
 
         public double getRequest_level() {
             return request_level;
         }
 
+        public double getNum_secs_left() {
+            return num_secs_left;
+        }
+
         public void setRequest_level(double request_level) {
             this.request_level = request_level;
+        }
+
+        public void setNum_secs_left(double num_secs_left) {
+            this.num_secs_left = num_secs_left;
         }
     }
 

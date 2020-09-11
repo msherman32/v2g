@@ -55,7 +55,7 @@ public class Employee implements Component {
     }
 
     public boolean is_satisfied() throws Exception {
-        return this.getCurrentCar().get_percentage() >= this.get_minimum_charge(3);
+        return this.getCurrentCar().get_percentage() >= this.get_minimum_charge(3); // 1.5?
     }
 
     public double get_current_charge() {

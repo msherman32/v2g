@@ -150,9 +150,9 @@ public class V2G_System implements Mediator {
     /**
      * Send the desired power to the charging stations that requested them
     **/
-     public void sendRouterPowerToChargingStations(double power_retunred, double power_requested) {
+     public void sendRouterPowerToChargingStations(double power_returned, double power_requested) {
         // TODO: change this so that we send the charge from the power cell TO the charging station instead of vice versa...
-        if (power_retunred == power_requested) {
+        if (power_returned == power_requested) {
             for (String gid : this.charging_stations.keySet()) { // Contains all the gids of employees currently occupying a charging station 
                 Integer station = this.charging_stations.get(gid);
                 Employee occupant = this.employees.get(gid); 
