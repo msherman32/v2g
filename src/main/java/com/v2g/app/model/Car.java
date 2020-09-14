@@ -6,6 +6,7 @@ public class Car {
     private Battery battery;
 
     public Car() {
+        this.battery = new Battery();
     }
 
     public Car(Battery battery) {
@@ -78,6 +79,11 @@ public class Car {
         private double current_charge;
         private double miles_driveable_at_capacity;
         private double power_dissipation;
+
+        public Battery () {
+            this.capacity = 1000;
+            this.miles_driveable_at_capacity = 200;
+        }
 
         public double get_power_dissipation(double temperature) {
             return power_dissipation;

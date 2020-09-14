@@ -8,7 +8,9 @@ public class PowerSupply {
     }
 
 	public double send_power_supply_based_on(double request) {
-        return request >= this.max_power_supply_rate ? this.max_power_supply_rate : request;
+        double result = request >= this.max_power_supply_rate ? this.max_power_supply_rate : request;
+        System.out.println(result);
+        return result;
     }
     
 }

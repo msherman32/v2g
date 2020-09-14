@@ -1,10 +1,12 @@
 package com.v2g.app.model.v2g_system.mediator;
 
+import com.v2g.app.model.Employee;
+
 public interface Mediator {
     void registerComponent(Component component);
 
-    void arrive(String employee_id) throws Exception;
-    void leave(String employee_id);
+    void arrive(Employee employee) throws Exception;
+    void leave(Employee employee);
 
     void sendChargingStationStatsToRouter();
 

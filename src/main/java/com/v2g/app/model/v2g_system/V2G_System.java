@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
-import com.v2g.app.App;
 import com.v2g.app.model.Employee;
 import com.v2g.app.model.v2g_system.PowerRouter.PowerCell;
 import com.v2g.app.model.v2g_system.mediator.Component;
@@ -16,12 +16,23 @@ public class V2G_System implements Mediator {
     // Define a better power NETWORK here
     private ArrayList<PowerSupply> sources;
     private ArrayList<PowerRouter> routers;
-    private int num_charging_stations; // Max value
+    private int num_charging_stations; // Max value?
     private HashMap<String, Integer> charging_stations;
     private HashMap<String, Employee> employees;
     private SortedSet<Integer> availableStations;
 
     public V2G_System() {
+        this.sources = new ArrayList<PowerSupply>();
+        this.sources.add(new PowerSupply());
+        this.routers = new ArrayList<PowerRouter>();
+        this.routers.add(new PowerRouter());
+        this.num_charging_stations = 5;
+        this.charging_stations = new HashMap<String, Integer>();
+        this.employees = new HashMap<String, Employee>();
+        this.availableStations = new TreeSet<Integer>();
+        for (int i = 0; i < this.num_charging_stations; i++) {
+            this.availableStations.add(i);
+        }
     }
 
     public V2G_System(ArrayList<PowerSupply> sources, ArrayList<PowerRouter> routers, HashMap<ChargingStation, Employee> charging_stations) {
@@ -45,7 +56,7 @@ public class V2G_System implements Mediator {
     //             : request;
     // }
 
-    public void setSources(ArrayList<PowerSupply> sources) {
+    public void setSources (ArrayList<PowerSupply> sources) {
         this.sources = sources;
     }
 
@@ -57,32 +68,32 @@ public class V2G_System implements Mediator {
         return this.routers.get(0);
     }
 
-    public PowerCell getCell(int index) {
+    public PowerCell getCell (int index) {
         return this.getRouter().getCells().get(index);
     }
 
-    public void setRouters(ArrayList<PowerRouter> routers) {
+    public void setRouters (ArrayList<PowerRouter> routers) {
         this.routers = routers;
     }
 
-    public V2G_System sources(ArrayList<PowerSupply> sources) {
+    public V2G_System sources (ArrayList<PowerSupply> sources) {
         this.sources = sources;
         return this;
     }
 
-    public V2G_System routers(ArrayList<PowerRouter> routers) {
+    public V2G_System routers (ArrayList<PowerRouter> routers) {
         this.routers = routers;
         return this;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals (Object o) {
         if (o == this)
             return true;
         if (!(o instanceof V2G_System)) {
             return false;
         }
-        V2G_System v2G_System = (V2G_System) o;
+         V2G_System v2G_System = (V2G_System) o;
         return Objects.equals(sources, v2G_System.sources) && Objects.equals(routers, v2G_System.routers)
                 && Objects.equals(charging_stations, v2G_System.charging_stations);
     }
@@ -101,7 +112,7 @@ public class V2G_System implements Mediator {
         return !this.charging_stations.isEmpty();
     }
 
-    public void registerComponent(Component component) {
+    public void registerComponent (Component component) {
         component.setMediator(this);
         // TODO instantiate components based on their types
     }
@@ -109,7 +120,7 @@ public class V2G_System implements Mediator {
     public void sendChargingStationStatsToRouter() {
         for (String gid : this.charging_stations.keySet()) { // Contains all the gids of employees currently occupying a charging station 
             Integer station = this.charging_stations.get(gid);
-            Employee occupant = this.employees.get(gid); 
+            Employee occupant = this.employees.get(gid);
             try {
                 if (!occupant.is_satisfied()) {
                     this.sendStationDataToRouter(station, occupant);
@@ -117,19 +128,19 @@ public class V2G_System implements Mediator {
                     // Do some v2g stuff...
                     // Or stop chargin this one.
                 }
-            } catch (Exception e) {
+            } catch  (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
     }
 
     // Send current charge to router's cell that matches this charging station (1:1 ratio)
-    private void sendStationDataToRouter(int cell, Employee occupant) throws Exception {
+    private void sendStationDataToRouter (int cell,  Employee occupant) throws Exception {
         this.getRouter().getCells().get(cell).set_stats(occupant.get_current_charge(), occupant.get_minimum_charge(3));
     }
 
     public double sendRouterRequestToPowerSupply() {
-        for (PowerCell power_cell : this.getRouter().getCells()) {
+        for  (PowerCell power_cell : this.getRouter().getCells()) {
             power_cell.prepare_request();
         }
         return this.getRouter().getTotalRequest(); // TODO: if this is 0, don't send a request to the power supply at all? (or do we need this for statistic purposes?)
@@ -139,7 +150,7 @@ public class V2G_System implements Mediator {
         return this.getPowerSource().send_power_supply_based_on(this.getRouter().getTotalRequest());
     }
     
-    public void sendRouterSupplyToStation(double power) {
+    public void sendRouterSupplyToStation (double power) {
         
     }
     
@@ -150,12 +161,12 @@ public class V2G_System implements Mediator {
     /**
      * Send the desired power to the charging stations that requested them
     **/
-     public void sendRouterPowerToChargingStations(double power_returned, double power_requested) {
+     public void sendRouterPowerToChargingStations (double power_returned,  double power_requested) {
         // TODO: change this so that we send the charge from the power cell TO the charging station instead of vice versa...
         if (power_returned == power_requested) {
-            for (String gid : this.charging_stations.keySet()) { // Contains all the gids of employees currently occupying a charging station 
-                Integer station = this.charging_stations.get(gid);
-                Employee occupant = this.employees.get(gid); 
+            for  (String gid : this.charging_stations.keySet()) { // Contains all the gids of employees currently occupying a charging station 
+                 Integer station = this.charging_stations.get(gid);
+                 Employee occupant = this.employees.get(gid); 
                 try {
                     if (occupant.is_satisfied()) {
                         this.sendStationDataToRouter(station, occupant);
@@ -165,7 +176,7 @@ public class V2G_System implements Mediator {
                         // remove from the charging station list..?
                         // Or move into low power mode until 100%
                     }
-                } catch (Exception e) {
+                } catch  (Exception e) {
                     System.out.println(e.getMessage());
                 }
             }
@@ -178,9 +189,9 @@ public class V2G_System implements Mediator {
             // and so that the remaining 25% is sent to the other cars NOT leaving soon. Then, once they reach a certain threshold resume power.
             // Decide based on time which ones will be leaving soon and divide it up this way
             
-            for (String gid : this.charging_stations.keySet()) { // Contains all the gids of employees currently occupying a charging station 
-                Integer station = this.charging_stations.get(gid);
-                Employee occupant = this.employees.get(gid); 
+            for  (String gid : this.charging_stations.keySet()) { // Contains all the gids of employees currently occupying a charging station 
+                 Integer station = this.charging_stations.get(gid);
+                 Employee occupant = this.employees.get(gid); 
                 try {
                     if (occupant.is_satisfied()) {
                         this.sendStationDataToRouter(station, occupant);
@@ -190,7 +201,7 @@ public class V2G_System implements Mediator {
                         // remove from the charging station list..?
                         // Or move into low power mode until 100%
                     }
-                } catch (Exception e) {
+                } catch  (Exception e) {
                     System.out.println(e.getMessage());
                 }
             }
@@ -217,21 +228,25 @@ public class V2G_System implements Mediator {
         }
     }
 
-    public void leave(String employee_id) {
-        Integer station = this.charging_stations.remove(employee_id);
+    public void leave (Employee employee) {
+         Integer station = this.charging_stations.remove(employee.getEmployee_id());
         if (station != null) {
             this.availableStations.add(station);
         }
         // Or have this only be called at the tail end of the while loop and THEN be reflected in the next iteration of the loop
     }
 
-    public void arrive(String employee_id) throws Exception {
+    public void arrive (Employee employee) throws Exception {
+        if (employee == null) {
+            throw new Exception("Employee is not defined");
+        }
         if (this.availableStations.isEmpty()) {
             throw new Exception("All Charging Stations are filled. Come back later!");
         }
         int station = this.availableStations.first();
         this.availableStations.remove(station);
-        this.charging_stations.put(employee_id, station);
+        this.charging_stations.put(employee.getEmployee_id(), station);
+        this.employees.put(employee.getEmployee_id(), employee);
         // Calculate something and send it to the router...?
     }
     

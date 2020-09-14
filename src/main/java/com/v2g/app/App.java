@@ -1,12 +1,15 @@
 package com.v2g.app;
 
+import javax.swing.plaf.basic.BasicScrollPaneUI.ViewportChangeHandler;
 import javax.xml.transform.Templates;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.net.URL;
 import java.net.URLConnection;
 
+import com.v2g.app.model.Car;
 import com.v2g.app.model.Employee;
 import com.v2g.app.model.Environment;
 import com.v2g.app.model.v2g_system.V2G_System;
@@ -54,9 +57,18 @@ public class App {
         // final double minimum_percentage = 95;
         int num_secs = 0;
 
-        Employee adam = new Employee();
+        ArrayList<Car> cars = new ArrayList<Car>();
+        cars.add(new Car());
+        Employee adam = new Employee("Adam", 0, 300, 50, cars);
+        Employee bob = new Employee("Bob", 0, 300, 50, cars);
+        Employee charlie = new Employee("Charlie", 0, 300, 50, cars);
+        v2g_System.registerComponent(adam);
+        v2g_System.registerComponent(bob);
+        v2g_System.registerComponent(charlie);
         try {
             adam.arriveAtChargingStation();
+            bob.arriveAtChargingStation();
+            charlie.arriveAtChargingStation();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -78,9 +90,12 @@ public class App {
             v2g_System.clear();
 
             num_secs++;
-            if (num_secs > environment.getBuilding().get_seconds_open()) {
+            // if (num_secs > environment.getBuilding().get_seconds_open()) {
+            if (num_secs > 3000) {
                 typical_hours = false;
                 adam.leaveChargingStation();
+                bob.leaveChargingStation();
+                charlie.leaveChargingStation();
             }
 
         } // End Cycle    

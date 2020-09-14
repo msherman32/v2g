@@ -12,21 +12,28 @@ public class Employee implements Component {
     private Mediator system;
     private String employee_id;
     private String name;
-    private TimeDefinition expected_arrival;
-    private TimeDefinition expected_departure;
+    // private TimeDefinition expected_arrival;
+    // private TimeDefinition expected_departure;
+    private double expected_arrival;
+    private double expected_departure;
     private double distance_to_home;
     private ArrayList<Car> cars;
 
     public Employee() {
     }
 
-    public Employee(String name, TimeDefinition expected_arrival, TimeDefinition expected_departure,
+    public Employee(String name, double expected_arrival, double expected_departure,
             double distance_to_home, ArrayList<Car> cars) {
         this.name = name;
+        this.employee_id = name;
         this.expected_arrival = expected_arrival;
         this.expected_departure = expected_departure;
         this.distance_to_home = distance_to_home;
         this.cars = cars;
+    }
+
+    public String getEmployee_id() {
+        return employee_id;
     }
 
     /**
@@ -47,11 +54,9 @@ public class Employee implements Component {
                 / this.getCurrentCar().get_capacity();
         double power_required = (mileage_required / miles_per_unit_of_power_ratio)
                 + this.getCurrentCar().getBattery().get_power_dissipation(App.temperature);
-        double minimum_guaranteed_power = factor * power_required;
+        double minimum_guaranteed_power = power_required * factor;
         return minimum_guaranteed_power >= this.getCurrentCar().get_capacity() 
             ? this.getCurrentCar().get_capacity() : minimum_guaranteed_power;
-        // return minimum_guaranteed_power >= this.getCurrentCar().get_capacity() ? 1.0
-        //         : minimum_guaranteed_power / this.getCurrentCar().get_capacity();
     }
 
     public boolean is_satisfied() throws Exception {
@@ -75,21 +80,21 @@ public class Employee implements Component {
         this.name = name;
     }
 
-    public TimeDefinition getExpected_arrival() {
-        return this.expected_arrival;
-    }
+    // public TimeDefinition getExpected_arrival() {
+    //     return this.expected_arrival;
+    // }
 
-    public void setExpected_arrival(TimeDefinition expected_arrival) {
-        this.expected_arrival = expected_arrival;
-    }
+    // public void setExpected_arrival(TimeDefinition expected_arrival) {
+    //     this.expected_arrival = expected_arrival;
+    // }
 
-    public TimeDefinition getExpected_departure() {
-        return this.expected_departure;
-    }
+    // public TimeDefinition getExpected_departure() {
+    //     return this.expected_departure;
+    // }
 
-    public void setExpected_departure(TimeDefinition expected_departure) {
-        this.expected_departure = expected_departure;
-    }
+    // public void setExpected_departure(TimeDefinition expected_departure) {
+    //     this.expected_departure = expected_departure;
+    // }
 
     public double getDistance_to_home() {
         return this.distance_to_home;
@@ -112,15 +117,15 @@ public class Employee implements Component {
         return this;
     }
 
-    public Employee expected_arrival(TimeDefinition expected_arrival) {
-        this.expected_arrival = expected_arrival;
-        return this;
-    }
+    // public Employee expected_arrival(TimeDefinition expected_arrival) {
+    //     this.expected_arrival = expected_arrival;
+    //     return this;
+    // }
 
-    public Employee expected_departure(TimeDefinition expected_departure) {
-        this.expected_departure = expected_departure;
-        return this;
-    }
+    // public Employee expected_departure(TimeDefinition expected_departure) {
+    //     this.expected_departure = expected_departure;
+    //     return this;
+    // }
 
     public Employee distance_to_home(double distance_to_home) {
         this.distance_to_home = distance_to_home;
@@ -150,23 +155,16 @@ public class Employee implements Component {
         return Objects.hash(name, expected_arrival, expected_departure, distance_to_home, cars);
     }
 
-    @Override
-    public String toString() {
-        return "{" + " name='" + getName() + "'" + ", expected_arrival='" + getExpected_arrival() + "'"
-                + ", expected_departure='" + getExpected_departure() + "'" + ", distance_to_home='"
-                + getDistance_to_home() + "'" + ", cars='" + getCars() + "'" + "}";
-    }
-
     public void setMediator(Mediator mediator) {
         this.system = mediator;
     }
 
     public void leaveChargingStation() {
-        system.leave(this.employee_id);
+        system.leave(this);
     }
 
     public void arriveAtChargingStation() throws Exception {
-        system.arrive(this.employee_id);
+        system.arrive(this);
     }
 
 }

@@ -6,6 +6,10 @@ public class PowerRouter {
 
     private ArrayList<PowerCell> cells;
 
+    public PowerRouter() {
+        this.cells = new ArrayList<PowerCell>(5);
+    }
+
     public ArrayList<PowerCell> getCells() {
         return this.cells;
     }
@@ -31,6 +35,10 @@ public class PowerRouter {
         private Charge_Stats stats;
         private Request request;
 
+        public PowerCell() {
+            this.capacity = 50;
+        }
+
         public void clear() {
             this.stats = null;
         }
@@ -47,6 +55,7 @@ public class PowerRouter {
             this.request = new Request();
             this.request.setRequest_level(difference);
             this.request.setNum_secs_left(this.stats.getNum_secs_left());
+            // System.out.println("HERE" + this.request);
         }
 
         public double getCapacity() {
@@ -112,6 +121,15 @@ public class PowerRouter {
         public void setNum_secs_left(double num_secs_left) {
             this.num_secs_left = num_secs_left;
         }
+
+
+        @Override
+        public String toString() {
+            return "Request: " + 
+                String.format("%d kWh in %d seconds", this.request_level, this.num_secs_left);
+        }
+        
+
     }
 
     public PowerCell getCell(int index) {
